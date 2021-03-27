@@ -1,14 +1,20 @@
 import json
 from pathlib import Path
 
+from shapely.geometry.polygon import Polygon
 
-def load_xcontest_airspace(file: Path):
+UTM_FOR_HUNGARY = 34
+
+
+def load_xcontest_airspace(file: Path) -> list:
     assert file.is_file()
 
     with open(file) as infile:
         data = json.load(infile)
 
     airspaces = data['airspaces']
+
+    airspace_list = []
 
     for airspace in airspaces:
         name = airspace['airname']
@@ -31,7 +37,17 @@ def load_xcontest_airspace(file: Path):
         upper_round = round_to_10(upper_m)
         lower_round = round_to_10(lower_m)
 
-        print(name, lower_round, upper_round)
+        geom = Polygon([(y, x) for x, y in airspace['components']])
+
+        data = dict(name=name, upper=upper_round, lower=lower_round, geom=geom)
+
+        airspace_list.append(data)
+
+    return airspace_list
+
+
+def buffer_100_meter(geom):
+    return geom
 
 
 def round_to_10(value):
