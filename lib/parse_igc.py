@@ -6,8 +6,7 @@ from config import IGC_TO_JSON_JS
 
 
 def parse_igc(file_path: Path) -> dict:
-    if not file_path.is_file():
-        raise ValueError('file missing')
+    assert file_path.is_file()
 
     p = subprocess.run(
         ['node', IGC_TO_JSON_JS, file_path],
