@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import pathlib
 import sys
 from pathlib import Path
 
