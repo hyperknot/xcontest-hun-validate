@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@openaip/openair-parser": "^1.2.8",
     "igc-parser": "1.x"
   }
 }

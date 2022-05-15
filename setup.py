@@ -1,5 +1,5 @@
 from setuptools import setup
 
-requirements = ['ipython', 'click', 'shapely', 'geojson']
+requirements = ['ipython', 'click', 'pygeos', 'geojson']
 
-setup(name='legter_check', python_requires='>=3.7', install_requires=requirements)
+setup(name='legter_check', python_requires='>=3.9', install_requires=requirements)
