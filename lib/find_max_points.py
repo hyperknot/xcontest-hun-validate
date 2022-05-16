@@ -19,8 +19,7 @@ def find_max_points(*, fixes: list, airspaces: dict):
 
 
 def get_max_point_in_geojson(*, points: np.array, altitudes: np.array, airspace: dict):
-    polygon = from_geojson(json.dumps(airspace['geometry']))
-    pygeos.prepare(polygon)
+    polygon = airspace['polygon']
     res = pygeos.contains(polygon, points)
 
     if not np.any(res):
