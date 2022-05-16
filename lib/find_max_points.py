@@ -3,10 +3,16 @@ import pygeos
 
 
 def find_max_points(*, fixes: list, airspaces: dict):
-    coords = [[f['longitude'], f['latitude']] for f in fixes]
-    altitudes = [[f['gpsAltitude']] for f in fixes]
+    coords = [[f['longitude'], f['latitude']] for f in fixes if f['gpsAltitude']]
+    altitudes = [[f['gpsAltitude']] for f in fixes if f['gpsAltitude']]
     points = pygeos.points(coords)
     altitudes = np.array(altitudes)
+
+    flight_ok = True
+
+    print(
+        'Szia, tegnap benézted a légteret, mint sokan mások beleértve engem is. Írtam egy scriptet, ami egyszer talán majd autómatikus lesz, de addig is ide beírom amit kidob.'
+    )
 
     for name, airspace_data in airspaces.items():
         max_alt = get_max_point_in_geojson(
@@ -25,9 +31,15 @@ def find_max_points(*, fixes: list, airspaces: dict):
         limit_rounded = int(round(limit / 10) * 10)
         diff = max_alt - limit_rounded
         if diff > 100:
+            flight_ok = False
             print(
                 f'A {name} légtérben {diff} méterrel légtereztél. Max magasságod {max_alt} m volt, megengedett magasság {limit_rounded} m volt.'
             )
+
+    if flight_ok:
+        print('Légtér OK')
+
+    print('\n\n')
 
 
 def get_max_point_in_geojson(*, points: np.array, altitudes: np.array, airspace: dict):
