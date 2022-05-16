@@ -1,13 +1,12 @@
 import json
 import pathlib
 
-import numpy as np
+import psycopg2
 import pygeos
-import pyproj
+from psycopg2._json import Json
 from pygeos import from_geojson
-from pyproj import Transformer
-from pyproj.aoi import AreaOfInterest
-from pyproj.database import query_utm_crs_info
+
+conn = None
 
 
 def load_airspace_geojson(path: pathlib.Path):
@@ -46,14 +45,23 @@ def save_airspace_geojson(airspaces: dict, path: pathlib.Path):
 
 
 def buffer_airspaces(*, airspaces: dict, buffer_meter: float):
-    utm_proj = pyproj.Proj(proj='utm', zone=34, ellps='WGS84')
-    wgs84 = pyproj.Proj(4326)
-    transformer = Transformer.from_proj(proj_from=wgs84, proj_to=utm_proj, always_xy=True)
-    # res = transformer.transform(47, 18)
-
     for airspace_data in airspaces.values():
-        polygon = airspace_data['polygon']
-        coords = pygeos.get_coordinates(polygon)
-        new_coords = transformer.transform(coords[:, 0], coords[:, 1])
-        result = pygeos.set_coordinates(polygon, np.array(new_coords).T)
-        print(result)
+        geojson = json.loads(pygeos.to_geojson(airspace_data['polygon']))
+        buffer_geom_postgis(geojson, buffer_meter=-1000)
+
+
+def buffer_geom_postgis(geojson, buffer_meter):
+    global conn
+
+    if conn is None:
+        conn = psycopg2.connect("dbname=user")
+
+    query = 'SELECT ST_AsGeoJSON(ST_Buffer(ST_GeomFromGeoJSON(%s)::geography, %s), 6)'
+
+    cur = conn.cursor()
+    cur.execute(query, (Json(geojson), buffer_meter))
+
+    records = cur.fetchone()
+    cur.close()
+
+    return records[0]

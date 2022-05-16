@@ -5,7 +5,8 @@ requirements = [
     'click',
     'pygeos',
     'geojson',
-    'pyproj',
+    # 'pyproj',
+    'psycopg2-binary',
 ]
 
 setup(name='legter_check', python_requires='>=3.9', install_requires=requirements)
