@@ -44,13 +44,20 @@ def save_airspace_geojson(airspaces: dict, path: pathlib.Path):
         json.dump(geojson, fp, indent=2, ensure_ascii=False)
 
 
-def buffer_airspaces(*, airspaces: dict, buffer_meter: float):
-    for airspace_data in airspaces.values():
-        geojson = json.loads(pygeos.to_geojson(airspace_data['polygon']))
-        buffer_geom_postgis(geojson, buffer_meter=-1000)
+def buffer_geojson_file(in_file: pathlib.Path, out_file: pathlib.Path, buffer_meters: float):
+    with open(in_file) as fp:
+        geojson = json.load(fp)
+    buffer_geojson_fc(geojson, buffer_meters)
+    with open(out_file, 'w') as fp:
+        json.dump(geojson, fp, ensure_ascii=False, indent=2)
 
 
-def buffer_geom_postgis(geojson, buffer_meter):
+def buffer_geojson_fc(geojson: dict, buffer_meters: float):
+    for feature in geojson['features']:
+        feature['geometry'] = buffer_geom_postgis(feature['geometry'], buffer_meters)
+
+
+def buffer_geom_postgis(geojson: dict, buffer_meters: float):
     global conn
 
     if conn is None:
@@ -59,9 +66,9 @@ def buffer_geom_postgis(geojson, buffer_meter):
     query = 'SELECT ST_AsGeoJSON(ST_Buffer(ST_GeomFromGeoJSON(%s)::geography, %s), 6)'
 
     cur = conn.cursor()
-    cur.execute(query, (Json(geojson), buffer_meter))
+    cur.execute(query, (Json(geojson), buffer_meters))
 
     records = cur.fetchone()
     cur.close()
 
-    return records[0]
+    return json.loads(records[0])

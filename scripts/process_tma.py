@@ -4,7 +4,12 @@ import json
 import pygeos
 
 from lib import DATA_DIR
-from lib.airspaces import load_airspace_geojson, save_airspace_geojson, buffer_airspaces
+from lib.airspaces import (
+    load_airspace_geojson,
+    save_airspace_geojson,
+    buffer_geojson_fc,
+    buffer_geojson_file,
+)
 
 
 def main():
@@ -21,15 +26,15 @@ def main():
         polygon = airspace_data['polygon']
         if not pygeos.intersects(sg_dissolved, polygon):
             continue
-
         airspace_data['polygon'] = pygeos.difference(polygon, sg_dissolved)
-
     save_airspace_geojson(tma_airspaces, DATA_DIR / 'tma_diffed.geojson')
 
     # MANUAL mapshaper filter-slivers min-area=1km2
 
-    tma_airspaces = load_airspace_geojson(DATA_DIR / 'tma_diffed_fixed.geojson')
-    buffer_airspaces(airspaces=tma_airspaces, buffer_meter=100)
+    buffer_geojson_file(
+        DATA_DIR / 'tma_diffed_fixed.geojson', DATA_DIR / 'tma_diffed_fixed_buffered.geojson', -100
+    )
+    buffer_geojson_file(DATA_DIR / 'sg.geojson', DATA_DIR / 'sg_buffered.geojson', -100)
 
 
 main()
