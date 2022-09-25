@@ -1,0 +1,20 @@
+lockfileVersion: '6.0'
+
+dependencies:
+  igc-parser:
+    specifier: 1.x
+    version: 1.0.0
+
+packages:
+
+  /flight-recorder-manufacturers@1.1.0:
+    resolution: {integrity: sha512-l2fhwfazGWm+vrYpJ40SByEOG4OMfD1Qc9zQxQlm4A3MpmRCC3ncQvfveLBYa3cTLmG24qXMsxAUyw5urmYEwQ==}
+    engines: {node: '>=6'}
+    dev: false
+
+  /igc-parser@1.0.0:
+    resolution: {integrity: sha512-Cdn2d4f47vnJtBCwio172Aeld39yUHbH9eIkvPueJcyamDtjddVDpvwv0NxUrGhV5TOyLPFo5bKJG544gA5TyQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      flight-recorder-manufacturers: 1.1.0
+    dev: false

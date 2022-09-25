@@ -23,6 +23,7 @@ def check_all_airspaces(*, fixes: list, airspaces: dict, sg_daily_activations: s
         limit = prop['limit']
         if name.replace(' ', '') in sg_daily_activations:
             limit = prop['limit_active']
+        limit = int(limit)
 
         max_alt = intersection_data['max_altitude']
         diff = max_alt - limit

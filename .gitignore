@@ -9,3 +9,4 @@ node_modules
 /scripts/*.json
 /process_all
 /data/sg_daily
+/data/flight_json

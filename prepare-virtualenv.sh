@@ -9,6 +9,6 @@ pip install -U pip wheel
 pip install -e .
 
 cd js_tools
-yarn
+pnpm i
 cd ..
 
