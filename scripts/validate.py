@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import pathlib
 
 import click as click
 
@@ -14,7 +15,7 @@ def cli():
 @cli.command()
 @click.argument('igc_file', type=click.Path(exists=True))
 def check_igc(igc_file):
-    validate_flight_igc(igc_file)
+    validate_flight_igc(pathlib.Path(igc_file))
 
 
 @cli.command()

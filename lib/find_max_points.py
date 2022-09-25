@@ -26,9 +26,9 @@ def check_all_airspaces(*, fixes: list, airspaces: dict):
         if diff > 100:
             print('________________________')
             print(f'{name} magassága: {limit} m')
-            print(f'Emelkedesi magasságod: {max_alt} AMSL')
+            print(f'Emelkedesi magasságod: {max_alt} méter')
             print(f'Légtérsértésed: {diff} méter')
-            print(f'Időpont: {intersection_data["time_at_max_altitude"]}')
+            print(f'Időpont: {intersection_data["time_at_max_altitude"]} UTC')
             print('________________________')
 
 
