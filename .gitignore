@@ -6,6 +6,4 @@ node_modules
 /venv
 *.egg-info
 
-/process
-/samples
 /scripts/*.json

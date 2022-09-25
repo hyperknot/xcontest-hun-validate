@@ -5,9 +5,7 @@ requirements = [
     'click',
     'pygeos',
     'geojson',
-    # 'pyproj',
-    'psycopg2-binary',
-    'vincenty',
+	    'vincenty',
 ]
 
-setup(name='legter_check', python_requires='>=3.9', install_requires=requirements)
+setup(name='xcontest_hun_validate', python_requires='>=3.9', install_requires=requirements)

@@ -8,4 +8,7 @@ source venv/bin/activate
 pip install -U pip wheel
 pip install -e .
 
+cd js_tools
+yarn
+cd ..
 
