@@ -18,7 +18,7 @@ def check_all_airspaces(*, fixes: list, airspaces: dict, sg_daily_activations: s
             continue
 
         prop = airspace_data['prop']
-        name = prop['name']
+        assert name == prop['name']
 
         limit = prop['limit']
         if name.replace(' ', '') in sg_daily_activations:
@@ -27,13 +27,20 @@ def check_all_airspaces(*, fixes: list, airspaces: dict, sg_daily_activations: s
         max_alt = intersection_data['max_altitude']
         diff = max_alt - limit
         if diff > 100:
-            print(sg_daily_activations)
             print('________________________')
             print(f'{name} magassága: {limit} m')
             print(f'Emelkedesi magasságod: {max_alt} méter')
             print(f'Légtérsértésed: {diff} méter')
             print(f'Időpont: {intersection_data["time_at_max_altitude"]} UTC')
+            # print(sg_daily_activations)
             print('________________________')
+
+    abs_max_altitude = get_abs_max_altitude(altitudes=altitudes, times=times)
+    if abs_max_altitude["max_altitude"] > 3000:
+        print('________________________')
+        print(f'Max magasságod: {abs_max_altitude["max_altitude"]} méter')
+        print(f'Időpont: {abs_max_altitude["time_at_max_altitude"]} UTC')
+        print('________________________')
 
 
 def get_airspace_intersection(
@@ -46,9 +53,18 @@ def get_airspace_intersection(
         return dict(includes=False)
 
     selected_altitudes = altitudes[res]
+    selected_times = times[res]
 
     max_altitude = selected_altitudes.max()
     max_altitude_index = selected_altitudes.argmax()
 
-    time_at_max_altitude = times[max_altitude_index][0]
+    time_at_max_altitude = selected_times[max_altitude_index][0]
     return dict(includes=True, max_altitude=max_altitude, time_at_max_altitude=time_at_max_altitude)
+
+
+def get_abs_max_altitude(*, altitudes: np.array, times: np.array):
+    max_altitude = altitudes.max()
+    max_altitude_index = altitudes.argmax()
+
+    time_at_max_altitude = times[max_altitude_index][0]
+    return dict(max_altitude=max_altitude, time_at_max_altitude=time_at_max_altitude)

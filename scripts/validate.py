@@ -20,8 +20,9 @@ def check_igc(igc_file):
 
 @cli.command()
 def check_all():
-    for file in sorted(PROCESS_ALL_DIR.glob('*.igc')):
-        validate_flight_igc(file)
+    for file in sorted(PROCESS_ALL_DIR.iterdir()):
+        if '.igc' in file.name.lower():
+            validate_flight_igc(file)
 
 
 if __name__ == '__main__':
