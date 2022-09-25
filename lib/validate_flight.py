@@ -3,6 +3,7 @@ import pathlib
 from pathlib import Path
 
 from lib import DATA_DIR
+from lib.activations import get_sg_daily_activations
 from lib.airspaces import load_airspaces_geojson
 from lib.find_max_points import check_all_airspaces
 from lib.parse_igc import parse_igc
@@ -19,7 +20,10 @@ def validate_flight_igc(igc_file: pathlib.Path):
         json.dump(igc_json, fp, ensure_ascii=False, indent=2)
 
     airspaces = load_airspaces_geojson(DATA_DIR / 'limits.geojson')
-    check_all_airspaces(fixes=igc_json['fixes'], airspaces=airspaces)
+    sg_daily_activations = get_sg_daily_activations(igc_json["date"])
+    check_all_airspaces(
+        fixes=igc_json['fixes'], airspaces=airspaces, sg_daily_activations=sg_daily_activations
+    )
 
     igc_json.pop('fixes', None)
     igc_json.pop('task', None)

@@ -2,7 +2,7 @@ import numpy as np
 import pygeos
 
 
-def check_all_airspaces(*, fixes: list, airspaces: dict):
+def check_all_airspaces(*, fixes: list, airspaces: dict, sg_daily_activations: set):
     fixes_with_altitude = [f for f in fixes if f['gpsAltitude']]
 
     coords = [[f['longitude'], f['latitude']] for f in fixes_with_altitude]
@@ -21,9 +21,13 @@ def check_all_airspaces(*, fixes: list, airspaces: dict):
         name = prop['name']
 
         limit = prop['limit']
+        if name.replace(' ', '') in sg_daily_activations:
+            limit = prop['limit_active']
+
         max_alt = intersection_data['max_altitude']
         diff = max_alt - limit
         if diff > 100:
+            print(sg_daily_activations)
             print('________________________')
             print(f'{name} magassága: {limit} m')
             print(f'Emelkedesi magasságod: {max_alt} méter')
