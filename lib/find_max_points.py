@@ -2,53 +2,49 @@ import numpy as np
 import pygeos
 
 
-def find_max_points(*, fixes: list, airspaces: dict):
-    coords = [[f['longitude'], f['latitude']] for f in fixes if f['gpsAltitude']]
-    altitudes = [[f['gpsAltitude']] for f in fixes if f['gpsAltitude']]
+def check_all_airspaces(*, fixes: list, airspaces: dict):
+    fixes_with_altitude = [f for f in fixes if f['gpsAltitude']]
+
+    coords = [[f['longitude'], f['latitude']] for f in fixes_with_altitude]
+    altitudes = np.array([[f['gpsAltitude']] for f in fixes_with_altitude])
+    times = np.array([[f['time']] for f in fixes_with_altitude])
     points = pygeos.points(coords)
-    altitudes = np.array(altitudes)
-
-    flight_ok = True
-
-    print(
-        'Szia, tegnap benézted a légteret, mint sokan mások beleértve engem is. Írtam egy scriptet, ami egyszer talán majd autómatikus lesz, de addig is ide beírom amit kidob.'
-    )
 
     for name, airspace_data in airspaces.items():
-        max_alt = get_max_point_in_geojson(
-            points=points, altitudes=altitudes, airspace=airspace_data
+        intersection_data = get_airspace_intersection(
+            points=points, altitudes=altitudes, times=times, airspace=airspace_data
         )
-        if max_alt is None:
+        if not intersection_data['includes']:
             continue
 
         prop = airspace_data['prop']
         name = prop['name']
-        if name.startswith('SG '):
-            limit = prop['upperCeiling']['value'] * 0.3048
-        else:
-            limit = prop['lowerCeiling']['value'] * 0.3048
 
-        limit_rounded = int(round(limit / 10) * 10)
-        diff = max_alt - limit_rounded
+        limit = prop['limit']
+        max_alt = intersection_data['max_altitude']
+        diff = max_alt - limit
         if diff > 100:
-            flight_ok = False
-            print(
-                f'A {name} légtérben {diff} méterrel légtereztél. Max magasságod {max_alt} m volt, megengedett magasság {limit_rounded} m volt.'
-            )
-
-    if flight_ok:
-        print('Légtér OK')
-
-    print('\n\n')
+            print('________________________')
+            print(f'{name} magassága: {limit} m')
+            print(f'Emelkedesi magasságod: {max_alt} AMSL')
+            print(f'Légtérsértésed: {diff} méter')
+            print(f'Időpont: {intersection_data["time_at_max_altitude"]}')
+            print('________________________')
 
 
-def get_max_point_in_geojson(*, points: np.array, altitudes: np.array, airspace: dict):
+def get_airspace_intersection(
+    *, points: np.array, altitudes: np.array, times: np.array, airspace: dict
+):
     polygon = airspace['polygon']
     res = pygeos.contains(polygon, points)
 
     if not np.any(res):
-        return None
+        return dict(includes=False)
 
-    # selected_points = points[res]
     selected_altitudes = altitudes[res]
-    return selected_altitudes.max()
+
+    max_altitude = selected_altitudes.max()
+    max_altitude_index = selected_altitudes.argmax()
+
+    time_at_max_altitude = times[max_altitude_index][0]
+    return dict(includes=True, max_altitude=max_altitude, time_at_max_altitude=time_at_max_altitude)
