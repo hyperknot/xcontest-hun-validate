@@ -10,3 +10,5 @@ node_modules
 /process_all
 /data/sg_daily
 /data/flight_json
+/data/full_daily
+/data/igc

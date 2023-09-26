@@ -2,7 +2,13 @@ import numpy as np
 import pygeos
 
 
-def check_all_airspaces(*, fixes: list, airspaces: dict, sg_daily_activations: set):
+def check_all_airspaces(
+    *,
+    fixes: list,
+    airspaces: dict,
+    sg_daily_activations: set,
+    full_daily_activations: dict,
+):
     fixes_with_altitude = [f for f in fixes if f['gpsAltitude']]
 
     coords = [[f['longitude'], f['latitude']] for f in fixes_with_altitude]
