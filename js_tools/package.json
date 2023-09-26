@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "igc-parser": "1.x"
+    "igc-parser": "~1.1.0"
   }
 }

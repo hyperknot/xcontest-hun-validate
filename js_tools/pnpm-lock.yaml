@@ -1,20 +1,24 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   igc-parser:
-    specifier: 1.x
-    version: 1.0.0
+    specifier: ~1.1.0
+    version: 1.1.0
 
 packages:
 
-  /flight-recorder-manufacturers@1.1.0:
-    resolution: {integrity: sha512-l2fhwfazGWm+vrYpJ40SByEOG4OMfD1Qc9zQxQlm4A3MpmRCC3ncQvfveLBYa3cTLmG24qXMsxAUyw5urmYEwQ==}
-    engines: {node: '>=6'}
+  /flight-recorder-manufacturers@2.0.0:
+    resolution: {integrity: sha512-FhSY7XslPkhYGdBBVRLLExoKqiLWbKuxPEx3O3a443hp8VOrcvE+ibibigVplQbaNipVG3pSPTZPTFJPIfcO8Q==}
+    engines: {node: '>=12'}
     dev: false
 
-  /igc-parser@1.0.0:
-    resolution: {integrity: sha512-Cdn2d4f47vnJtBCwio172Aeld39yUHbH9eIkvPueJcyamDtjddVDpvwv0NxUrGhV5TOyLPFo5bKJG544gA5TyQ==}
+  /igc-parser@1.1.0:
+    resolution: {integrity: sha512-CJGWiCcCCxNSI3Pt0zbllHNekEp2NOVCgDysg5/7FuW/uXUUDiW+AcZWSwRwvtRQxnYf+Sn7mQmYKLWQfVSATA==}
     engines: {node: '>=12'}
     dependencies:
-      flight-recorder-manufacturers: 1.1.0
+      flight-recorder-manufacturers: 2.0.0
     dev: false
