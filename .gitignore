@@ -12,3 +12,4 @@ node_modules
 /data/flight_json
 /data/full_daily
 /data/igc
+/debug.json

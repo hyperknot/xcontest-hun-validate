@@ -1,13 +1,17 @@
+import datetime
+
 import numpy as np
 import pygeos
+
+from lib.activations import check_airspace_activation_by_time
 
 
 def check_all_airspaces(
     *,
     fixes: list,
     airspaces: dict,
-    sg_daily_activations: set,
-    full_daily_activations: dict,
+    sg_activations: set,
+    day_str: str,
 ):
     fixes_with_altitude = [f for f in fixes if f['gpsAltitude']]
 
@@ -16,7 +20,7 @@ def check_all_airspaces(
     times = np.array([[f['time']] for f in fixes_with_altitude])
     points = pygeos.points(coords)
 
-    for name, airspace_data in airspaces.items():
+    for airspace_nice_name, airspace_data in airspaces.items():
         intersection_data = get_airspace_intersection(
             points=points, altitudes=altitudes, times=times, airspace=airspace_data
         )
@@ -24,22 +28,26 @@ def check_all_airspaces(
             continue
 
         prop = airspace_data['prop']
-        assert name == prop['name']
+        assert airspace_nice_name == prop['name']
 
         limit = prop['limit']
-        if name.replace(' ', '') in sg_daily_activations:
+        if airspace_nice_name.replace(' ', '') in sg_activations:
             limit = prop['limit_active']
+
+        if check_airspace_activation_by_time(day_str, airspace_nice_name, intersection_data):
+            limit = prop['limit_active']
+
         limit = int(limit)
 
         max_alt = intersection_data['max_altitude']
         diff = max_alt - limit
-        if diff > 100:
+        if limit == 0 or diff > 100:
             print('________________________')
-            print(f'{name} magassága: {limit} m')
+            print(f'{airspace_nice_name} magassága: {limit} m')
             print(f'Emelkedesi magasságod: {max_alt} méter')
             print(f'Légtérsértésed: {diff} méter')
             print(f'Időpont: {intersection_data["time_at_max_altitude"]} UTC')
-            # print(sg_daily_activations)
+            # print(sg_activations)
             print('________________________')
 
     abs_max_altitude = get_abs_max_altitude(altitudes=altitudes, times=times)
@@ -52,7 +60,7 @@ def check_all_airspaces(
 
 def get_airspace_intersection(
     *, points: np.array, altitudes: np.array, times: np.array, airspace: dict
-):
+) -> dict:
     polygon = airspace['polygon']
     res = pygeos.contains(polygon, points)
 
@@ -65,8 +73,17 @@ def get_airspace_intersection(
     max_altitude = selected_altitudes.max()
     max_altitude_index = selected_altitudes.argmax()
 
+    start = datetime.time.fromisoformat(selected_times[0][0])
+    end = datetime.time.fromisoformat(selected_times[-1][0])
+
     time_at_max_altitude = selected_times[max_altitude_index][0]
-    return dict(includes=True, max_altitude=max_altitude, time_at_max_altitude=time_at_max_altitude)
+    return dict(
+        includes=True,
+        max_altitude=max_altitude,
+        time_at_max_altitude=time_at_max_altitude,
+        start=start,
+        end=end,
+    )
 
 
 def get_abs_max_altitude(*, altitudes: np.array, times: np.array):

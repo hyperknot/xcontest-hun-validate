@@ -5,6 +5,10 @@ import pygeos
 from pygeos import from_geojson
 
 
+
+
+
+
 def load_airspaces_geojson(path: pathlib.Path):
     with open(path) as fp:
         data = json.load(fp)
