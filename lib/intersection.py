@@ -56,9 +56,11 @@ def check_all_airspaces(
         diff = max_alt - limit
         if limit == 0 or diff > 100:
             valid = False
+            message += f'{airspace_nice_name}\n'
             if limit != 0:
-                message += f'{airspace_nice_name} magassága: {limit} m\n'
-            message += activations_inter.message
+                message += f'légtér magassága: {limit} m\n'
+            if activations_inter.found:
+                message += activations_inter.message
             message += f'max magasságod: {max_alt} méter\n'
             if limit != 0:
                 message += f'légtérsértésed: {diff} méter\n'
@@ -133,14 +135,14 @@ def calculate_activation_intersections(
         act_from = datetime.datetime.fromisoformat(act['from']).time()
         act_to = datetime.datetime.fromisoformat(act['to']).time()
 
-        message += f'légtér aktív: {act_from}-{act_to}\n'
+        message += f'légtér aktív: {act_from} - {act_to} UTC\n'
 
         inter = interval_intersection(
             intersection_data['start'], intersection_data['end'], act_from, act_to
         )
         if inter:
             intersect_list.append(inter)
-            message += f'légtérben repültél: {inter[0]}-{inter[1]}\n'
+            message += f'légtérben repültél: {inter[0]} - {inter[1]} UTC\n'
 
     if not intersect_list:
         return Box(found=False)

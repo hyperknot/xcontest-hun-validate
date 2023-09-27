@@ -18,7 +18,7 @@ def validate_flight_igc(igc_file: pathlib.Path):
     day_str = igc_json['date']
 
     message += f'{day_str} {igc_json["pilot"]}\n'
-    message += f'{igc_json["loggerManufacturer"]} - {igc_json["loggerType"]}\n'
+    message += f'{igc_json["loggerManufacturer"]} - {igc_json["loggerType"]}\n\n'
 
     with open('debug.json', 'w') as fp:
         json.dump(igc_json, fp, ensure_ascii=False, indent=2)
@@ -35,8 +35,10 @@ def validate_flight_igc(igc_file: pathlib.Path):
     )
 
     message += result.message
-    print('\n\n\n')
-    print(message)
+
+    if not result.valid:
+        print('\n\n\n')
+        print(message)
 
     #
     # igc_json.pop('fixes', None)
