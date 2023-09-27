@@ -22,8 +22,8 @@ def validate_flight_igc(igc_file: pathlib.Path):
     message += f'{day_str} {igc_json["pilot"]}\n'
     message += f'{igc_json["loggerManufacturer"]} - {igc_json["loggerType"]}\n\n'
 
-    with open('debug.json', 'w') as fp:
-        json.dump(igc_json, fp, ensure_ascii=False, indent=2)
+    # with open('debug.json', 'w') as fp:
+    #     json.dump(igc_json, fp, ensure_ascii=False, indent=2)
 
     airspaces = load_airspaces_geojson(MAP_FILE)
 
