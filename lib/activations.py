@@ -3,8 +3,7 @@ import json
 
 import requests as requests
 
-from lib import FULL_DAILY_DIR, SG_DAILY_DIR
-
+from lib import FULL_DAILY_DIR, SG_DAILY_DIR, json_fx
 
 CHECKED_AIRSPACES = {
     'Dunaújváros DZ': 'SDZLHDV',
@@ -56,13 +55,13 @@ def check_airspace_activation_by_time(
 
     full_activations = get_full_daily_activations(day_str)
 
-    activation_data = full_activations.get(airspace_short_name)['activations']
+    activation_data = full_activations.get(airspace_short_name)
     if not activation_data:
         return False
 
     intersects = False
 
-    for act in activation_data:
+    for act in activation_data['activations']:
         act_from = datetime.datetime.fromisoformat(act['from']).time()
         act_to = datetime.datetime.fromisoformat(act['to']).time()
 
@@ -76,5 +75,3 @@ def check_airspace_activation_by_time(
 
 def intervals_intersect(start1, end1, start2, end2) -> bool:
     return start1 < end2 and start2 < end1
-
-

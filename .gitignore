@@ -6,12 +6,6 @@ node_modules
 /venv
 *.egg-info
 
-/scripts/*.json
-/process_all
-/data/sg_daily
-/data/flight_json
-/data/full_daily
-/data/igc
+/data
 /debug.json
-/data/igc2
 /out
