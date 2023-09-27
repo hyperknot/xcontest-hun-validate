@@ -6,6 +6,7 @@ requirements = [
     'pygeos',
     'geojson',
     'requests',
+    'python-box',
 ]
 
 setup(

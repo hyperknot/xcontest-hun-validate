@@ -2,8 +2,9 @@ import datetime
 
 import numpy as np
 import pygeos
+from box import Box
 
-from lib.activations import check_airspace_activation_by_time
+from lib.activations import calculate_activation_intersections
 
 
 def check_all_airspaces(
@@ -12,7 +13,7 @@ def check_all_airspaces(
     airspaces: dict,
     sg_activations: set,
     day_str: str,
-):
+) -> Box:
     fixes_with_altitude = [f for f in fixes if f['gpsAltitude']]
 
     coords = [[f['longitude'], f['latitude']] for f in fixes_with_altitude]
@@ -21,6 +22,8 @@ def check_all_airspaces(
     points = pygeos.points(coords)
 
     valid = True
+
+    message = ''
 
     for airspace_nice_name, airspace_data in airspaces.items():
         intersection_data = get_airspace_intersection(
@@ -36,7 +39,10 @@ def check_all_airspaces(
         if airspace_nice_name.replace(' ', '') in sg_activations:
             limit = prop['limit_active']
 
-        if check_airspace_activation_by_time(day_str, airspace_nice_name, intersection_data):
+        activations_inter = calculate_activation_intersections(
+            day_str, airspace_nice_name, intersection_data
+        )
+        if activations_inter.found:
             limit = prop['limit_active']
 
         limit = int(limit)
@@ -45,24 +51,24 @@ def check_all_airspaces(
         diff = max_alt - limit
         if limit == 0 or diff > 100:
             valid = False
-            print('________________________')
-            print(f'{airspace_nice_name} magassága: {limit} m')
-            print(f'Emelkedesi magasságod: {max_alt} méter')
-            print(f'Légtérsértésed: {diff} méter')
-            print(f'Időpont: {intersection_data["time_at_max_altitude"]} UTC')
-            # print(sg_activations)
-            print('________________________')
+            if limit != 0:
+                message += f'{airspace_nice_name} magassága: {limit} m\n'
+            message += activations_inter.message
+            message += f'max magasságod: {max_alt} méter\n'
+            if limit != 0:
+                message += f'légtérsértésed: {diff} méter\n'
+            message += f'időpont: {intersection_data["time_at_max_altitude"]} UTC\n'
 
     abs_max_altitude = get_abs_max_altitude(altitudes=altitudes, times=times)
     if abs_max_altitude["max_altitude"] > 3000:
         valid = False
-        print('________________________')
-        print(f'Max magasságod: {abs_max_altitude["max_altitude"]} méter')
-        print(f'Időpont: {abs_max_altitude["time_at_max_altitude"]} UTC')
-        print('________________________')
+        message += f'Max magasságod: {abs_max_altitude["max_altitude"]} méter\n'
+        message += f'Időpont: {abs_max_altitude["time_at_max_altitude"]} UTC\n'
 
     if valid:
-        print('    Légtér OK :-)')
+        message += '    Légtér OK ٩(◕‿◕｡)۶\n'
+
+    return Box(valid=valid, message=message)
 
 
 def get_airspace_intersection(
