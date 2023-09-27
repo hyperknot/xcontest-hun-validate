@@ -80,6 +80,8 @@ def check_all_airspaces(
 
     if valid:
         message += '    Légtér OK ٩(◕‿◕｡)۶\n'
+    else:
+        message += '\nHa nem értesz egyet vagy volt engedélyed berepülni, írj az mkksupport@gmail.com-ra.\n'
 
     return Box(valid=valid, message=message)
 
