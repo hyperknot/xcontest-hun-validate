@@ -57,14 +57,20 @@ def check_all_airspaces(
         if limit == 0 or diff > 100:
             valid = False
             message += f'{airspace_nice_name}\n'
+
             if limit != 0:
                 message += f'légtér magassága: {limit} m\n'
+
             if activations_inter.found:
                 message += activations_inter.message
+
             message += f'max magasságod: {max_alt} méter\n'
+
             if limit != 0:
                 message += f'légtérsértésed: {diff} méter\n'
-            message += f'időpont: {intersection_data["time_at_max_altitude"]} UTC\n'
+
+            if not activations_inter.found:
+                message += f'időpont: {intersection_data["time_at_max_altitude"]} UTC\n'
 
     abs_max_altitude = get_abs_max_altitude(altitudes=altitudes, times=times)
     if abs_max_altitude["max_altitude"] > 3000:

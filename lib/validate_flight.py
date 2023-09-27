@@ -2,6 +2,8 @@ import json
 import pathlib
 from pathlib import Path
 
+from box import Box
+
 from lib import MAP_FILE
 from lib.download_activations import get_sg_daily_activations
 from lib.airspaces import load_airspaces_geojson
@@ -36,13 +38,4 @@ def validate_flight_igc(igc_file: pathlib.Path):
 
     message += result.message
 
-    if not result.valid:
-        print('\n\n\n')
-        print(message)
-
-    #
-    # igc_json.pop('fixes', None)
-    # igc_json.pop('task', None)
-    # igc_json.pop('security', None)
-    # igc_json.pop('dataRecords', None)
-    # pprint(igc_json)
+    return Box(valid=result.valid, message=message)
