@@ -22,7 +22,7 @@ def check_one(igc_file):
 
 @cli.command()
 @click.argument('igc_file', type=click.Path(exists=True, path_type=pathlib.Path))
-def check_one_json(igc_file):
+def check_json(igc_file):
     data = validate_flight_igc(igc_file)
     print(json.dumps(data, ensure_ascii=False, indent=2))
 
