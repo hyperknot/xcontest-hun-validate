@@ -5,7 +5,7 @@ run `source prepare-virtualenv.sh` or follow the lines inside the file. Needs Py
 
 ### Usage
 
-Use `validate.py` with:
+Use `./validate.py`.
 
 #### Human readable
 `validate.py check-one example.igc` -> output human message for one IGC file
