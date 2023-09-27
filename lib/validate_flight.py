@@ -1,6 +1,7 @@
 import json
 import pathlib
 from pathlib import Path
+from pprint import pprint
 
 from lib import DATA_DIR
 from lib.activations import get_full_daily_activations, get_sg_daily_activations
@@ -32,10 +33,9 @@ def validate_flight_igc(igc_file: pathlib.Path):
         sg_activations=sg_activations,
         day_str=day_str,
     )
-
     #
     # igc_json.pop('fixes', None)
     # igc_json.pop('task', None)
     # igc_json.pop('security', None)
     # igc_json.pop('dataRecords', None)
-    # # pprint(igc_json)
+    # pprint(igc_json)

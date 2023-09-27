@@ -10,3 +10,9 @@ IGC_DIR = DATA_DIR / 'igc'
 
 SG_DAILY_DIR = DATA_DIR / 'sg_daily'
 FULL_DAILY_DIR = DATA_DIR / 'full_daily'
+
+
+def json_fx(data):
+    from pyfx import PyfxApp
+
+    PyfxApp(data).run()

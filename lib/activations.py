@@ -76,3 +76,5 @@ def check_airspace_activation_by_time(
 
 def intervals_intersect(start1, end1, start2, end2) -> bool:
     return start1 < end2 and start2 < end1
+
+

@@ -20,6 +20,8 @@ def check_all_airspaces(
     times = np.array([[f['time']] for f in fixes_with_altitude])
     points = pygeos.points(coords)
 
+    valid = True
+
     for airspace_nice_name, airspace_data in airspaces.items():
         intersection_data = get_airspace_intersection(
             points=points, altitudes=altitudes, times=times, airspace=airspace_data
@@ -42,6 +44,7 @@ def check_all_airspaces(
         max_alt = intersection_data['max_altitude']
         diff = max_alt - limit
         if limit == 0 or diff > 100:
+            valid = False
             print('________________________')
             print(f'{airspace_nice_name} magassága: {limit} m')
             print(f'Emelkedesi magasságod: {max_alt} méter')
@@ -52,10 +55,14 @@ def check_all_airspaces(
 
     abs_max_altitude = get_abs_max_altitude(altitudes=altitudes, times=times)
     if abs_max_altitude["max_altitude"] > 3000:
+        valid = False
         print('________________________')
         print(f'Max magasságod: {abs_max_altitude["max_altitude"]} méter')
         print(f'Időpont: {abs_max_altitude["time_at_max_altitude"]} UTC')
         print('________________________')
+
+    if valid:
+        print('    Légtér OK :-)')
 
 
 def get_airspace_intersection(

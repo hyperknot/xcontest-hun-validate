@@ -13,3 +13,5 @@ node_modules
 /data/full_daily
 /data/igc
 /debug.json
+/data/igc2
+/out
