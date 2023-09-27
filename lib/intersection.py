@@ -4,7 +4,12 @@ import numpy as np
 import pygeos
 from box import Box
 
-from lib.activations import calculate_activation_intersections
+from lib.download_activations import get_full_daily_activations
+from lib.lib import interval_intersection
+
+CHECKED_AIRSPACES = {
+    'Dunaújváros DZ': 'SDZLHDV',
+}
 
 
 def check_all_airspaces(
@@ -105,3 +110,43 @@ def get_abs_max_altitude(*, altitudes: np.array, times: np.array):
 
     time_at_max_altitude = times[max_altitude_index][0]
     return dict(max_altitude=max_altitude, time_at_max_altitude=time_at_max_altitude)
+
+
+def calculate_activation_intersections(
+    day_str: str, airspace_nice_name: str, intersection_data: dict
+) -> Box:
+    airspace_short_name = CHECKED_AIRSPACES.get(airspace_nice_name)
+    if not airspace_short_name:
+        return Box(found=False)
+
+    full_activations = get_full_daily_activations(day_str)
+
+    activation_data = full_activations.get(airspace_short_name)
+    if not activation_data:
+        return Box(found=False)
+
+    intersect_list = []
+
+    message = ''
+
+    for act in activation_data['activations']:
+        act_from = datetime.datetime.fromisoformat(act['from']).time()
+        act_to = datetime.datetime.fromisoformat(act['to']).time()
+
+        message += f'légtér aktív: {act_from}-{act_to}\n'
+
+        inter = interval_intersection(
+            intersection_data['start'], intersection_data['end'], act_from, act_to
+        )
+        if inter:
+            intersect_list.append(inter)
+            message += f'légtérben repültél: {inter[0]}-{inter[1]}\n'
+
+    if not intersect_list:
+        return Box(found=False)
+
+    return Box(
+        found=True,
+        list=intersect_list,
+        message=message,
+    )

@@ -3,7 +3,7 @@ import pathlib
 from pathlib import Path
 
 from lib import MAP_FILE
-from lib.activations import get_sg_daily_activations
+from lib.download_activations import get_sg_daily_activations
 from lib.airspaces import load_airspaces_geojson
 from lib.intersection import check_all_airspaces
 from lib.parse_igc import parse_igc
